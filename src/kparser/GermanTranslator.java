@@ -47,7 +47,7 @@ public class GermanTranslator {
 	 * Fetches the raw German translation (word to word) for a given sentence considering the semantics
 	 * 
 	 * @param sentence sentence to translate
-	 * @param stem pass true if you want to stem, else flase
+	 * @param stem pass true if you want to stem, else false
 	 * @return
 	 * @throws IOException
 	 * @throws JSONException
