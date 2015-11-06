@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="vendor/kparser/kparser.jar"/>
 	<classpathentry kind="lib" path="vendor/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="vendor/jython-standalone-2.7.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nitinpasumarthy/jython2.7.0/jython.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

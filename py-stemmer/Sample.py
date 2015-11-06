@@ -1,2 +1,8 @@
+import os
+import nltk
+
 def greetings():
-	return "Hello World"
+	return os.getcwd()
+
+def greetings2(name):
+	return "Hello " + name

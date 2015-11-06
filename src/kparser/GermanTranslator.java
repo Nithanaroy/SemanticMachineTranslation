@@ -1,6 +1,7 @@
 package kparser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -9,51 +10,77 @@ import org.json.simple.parser.ParseException;
 import module.graph.ParserHelper;
 import module.graph.resources.DependencyParserResource;
 import module.graph.resources.InputDependencies;
+import stemmer.StemmerFactory;
+import stemmer.StemmerType;
 
 /**
- * Constructs a German [Semantic] Parse tree. Calls KParser to get input sentence's [English] semantic tree. Calls GermanTranslator to translate each word to German keeping in mind the [semantic]
+ * Constructs a German [Semantic] Parse tree. Calls KParser to get input sentence's [English] semantic tree.
+ * Calls GermanTranslator to translate each word to German keeping in mind the [semantic]
  * context. Returns that Tree
  * 
  * @author nitinpasumarthy
  *
  */
-public class GermanTree {
+public class GermanTranslator {
 
-	private static GermanTree _germanTree = null;
+	private static GermanTranslator _germanTree = null;
 	private ParserHelper ph = null;
 	DependencyParserResource dr;
 
 	/**
 	 * A SingleTon class
 	 */
-	private GermanTree() {
+	private GermanTranslator() {
 		/* expensive operations */
 		// ph = new ParserHelper();
 		dr = new DependencyParserResource();
 	}
 
-	public static GermanTree getInstance() {
+	public static GermanTranslator getInstance() {
 		if (_germanTree == null) {
-			_germanTree = new GermanTree();
+			_germanTree = new GermanTranslator();
 		}
 		return _germanTree;
 	}
 
-	public String getRawGermanSetence(String sentence) throws IOException, JSONException, ParseException {
+	/**
+	 * Fetches the raw German translation (word to word) for a given sentence considering the semantics
+	 * 
+	 * @param sentence sentence to translate
+	 * @param stem pass true if you want to stem, else flase
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 * @throws ParseException
+	 */
+	public String getRawGermanSentence(String sentence, boolean stem) throws IOException, JSONException, ParseException {
 		StringBuilder builder = new StringBuilder();
 		InputDependencies iDeps = dr.extractDependencies(sentence, false, 0);
 		HashMap<String, String> posMap = iDeps.getPosMap();
 
 		String words[] = sentence.split(" "); // Assumption-1024146
+		ArrayList<String> stemmedWords;
+		if (stem)
+			stemmedWords = StemmerFactory.getStemmer(StemmerType.WordNet, words).stem();
+		else
+			stemmedWords = ArrayToList(words);
 
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
 			String pos = posMap.get(word + "-" + (i + 1));
-			String german = getGermanWord(word, pos);
+			String german = getGermanWord(stemmedWords.get(i), pos);
 			builder.append(german + " ");
 		}
 
 		return builder.toString();
+	}
+
+	private <T> ArrayList<T> ArrayToList(T[] words) {
+		ArrayList<T> list = new ArrayList<>(words.length);
+		for (T word : words) {
+			list.add(word);
+		}
+		return list;
 	}
 
 	/**
