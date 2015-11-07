@@ -43,20 +43,26 @@ public class EfficiencyChecker {
 	 * 
 	 * @param engFilePath Complete path of the file containing English sentences, one per line
 	 * @param germanFilePath Complete path to corresponding German translations, one per line
-	 * @param maxLines Maximum number of lines to translate and compare
+	 * @param settings 1) maxlines(int): Maximum number of lines to translate and compare (2) stem(bool): decides whether stemming should be done or not while translation
 	 * @return
 	 * @throws IOException
 	 * @throws JSONException
 	 * @throws ParseException
 	 */
-	public static HashMap<String, ArrayList<Integer>> test(String engFilePath, String germanFilePath, int maxLines)
+	public static HashMap<String, ArrayList<Integer>> test(String engFilePath, String germanFilePath, HashMap<Settings, Object> settings)
 			throws IOException, JSONException, ParseException {
 
 		BufferedReader en = new BufferedReader(new FileReader(engFilePath));
 		BufferedReader de = new BufferedReader(new FileReader(germanFilePath));
 		GermanTranslator t = GermanTranslator.getInstance();
 
+		settings = getMergedSettings(settings);
+		int maxLines = (int) settings.get(Settings.maxLines);
+		boolean stem = (boolean) settings.get(Settings.stem);
+
 		HashMap<String, ArrayList<Integer>> diffs = new HashMap<>();
+		diffs.put("TotalExpectedWords", new ArrayList<Integer>(maxLines));
+		diffs.put("TotalActualWords", new ArrayList<Integer>(maxLines));
 		diffs.put("OneToOne", new ArrayList<Integer>(maxLines));
 		diffs.put("BagCompare", new ArrayList<Integer>(maxLines));
 		diffs.put("MinEditDistance", new ArrayList<Integer>(maxLines));
@@ -65,8 +71,10 @@ public class EfficiencyChecker {
 		for (int i = 0; i < maxLines; i++) {
 			eng = en.readLine();
 			gerExpected = de.readLine();
-			gerActual = t.getRawGermanSentence(eng, true);
+			gerActual = t.getRawGermanSentence(eng, stem);
 
+			diffs.get("TotalExpectedWords").add(gerExpected.split(" ").length);
+			diffs.get("TotalActualWords").add(gerActual.split(" ").length);
 			diffs.get("OneToOne").add(oneToOneCompare(gerActual, gerExpected));
 			diffs.get("BagCompare").add(bagOfWordsComparison(gerActual, gerExpected));
 			diffs.get("MinEditDistance").add(minEditDistance(gerActual, gerExpected));
@@ -78,6 +86,22 @@ public class EfficiencyChecker {
 		en.close();
 		de.close();
 		return diffs;
+	}
+
+	/**
+	 * Has default settings.
+	 * Merges the defaults with provided ones with provided ones being at higher priority
+	 * 
+	 * @param settings user settings
+	 * @return merged settings with default and user given
+	 */
+	private static HashMap<Settings, Object> getMergedSettings(HashMap<Settings, Object> settings) {
+		HashMap<Settings, Object> defaultSettings = new HashMap<>();
+		defaultSettings.put(Settings.maxLines, 10);
+		defaultSettings.put(Settings.stem, false);
+		if (settings != null)
+			defaultSettings.putAll(settings);
+		return defaultSettings;
 	}
 
 	/**
