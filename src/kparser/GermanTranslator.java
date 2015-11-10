@@ -8,10 +8,9 @@ import org.json.JSONException;
 import org.json.simple.parser.ParseException;
 
 import module.graph.ParserHelper;
+import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
 import module.graph.resources.InputDependencies;
-import stemmer.StemmerFactory;
-import stemmer.StemmerType;
 
 /**
  * Constructs a German [Semantic] Parse tree. Calls KParser to get input sentence's [English] semantic tree.
@@ -47,28 +46,27 @@ public class GermanTranslator {
 	 * Fetches the raw German translation (word to word) for a given sentence considering the semantics
 	 * 
 	 * @param sentence sentence to translate
-	 * @param stem pass true if you want to stem, else false
+	 * @param lemmatize pass true if you want to stem, else false
 	 * @return
 	 * @throws IOException
 	 * @throws JSONException
 	 * @throws ParseException
 	 */
-	public String getRawGermanSentence(String sentence, boolean stem) throws IOException, JSONException, ParseException {
+	public String getRawGermanSentence(String sentence, boolean lemmatize) throws IOException, JSONException, ParseException {
 		StringBuilder builder = new StringBuilder();
 		InputDependencies iDeps = dr.extractDependencies(sentence, false, 0);
 		HashMap<String, String> posMap = iDeps.getPosMap();
 
 		String words[] = sentence.split(" "); // Assumption-1024146
-		ArrayList<String> stemmedWords;
-		if (stem)
-			stemmedWords = StemmerFactory.getStemmer(StemmerType.WordNet, words).stem();
-		else
-			stemmedWords = ArrayToList(words);
+		JAWSutility j = new JAWSutility(); // For lemmatization
 
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
 			String pos = posMap.get(word + "-" + (i + 1));
-			String german = getGermanWord(stemmedWords.get(i), pos);
+			if (lemmatize && pos != null && pos.charAt(0) == 'V') {
+				word = j.getBaseForm(word, "v");
+			}
+			String german = getGermanWord(word, pos);
 			builder.append(german + " ");
 		}
 

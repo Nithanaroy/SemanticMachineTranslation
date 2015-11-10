@@ -17,7 +17,7 @@ public class Runner {
 		// Settings for tester
 		HashMap<Settings, Object> mySettings = new HashMap<>();
 		mySettings.put(Settings.maxLines, 2);
-		mySettings.put(Settings.stem, false);
+		mySettings.put(Settings.stem, true);
 
 		HashMap<String, ArrayList<Integer>> diffLines = EfficiencyChecker.test(
 				"/Volumes/350GB/Projects/NLP/SemanticMachineTranslation/data/europarl-v7.de-en.en",
