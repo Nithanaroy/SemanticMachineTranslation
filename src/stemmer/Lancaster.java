@@ -2,7 +2,7 @@ package stemmer;
 
 import java.util.ArrayList;
 
-import kparser.PythonRunner;
+import utils.PythonRunner;
 
 public class Lancaster extends Stemmer {
 

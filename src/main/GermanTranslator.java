@@ -1,4 +1,4 @@
-package kparser;
+package main;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import module.graph.ParserHelper;
 import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
 import module.graph.resources.InputDependencies;
+import translator.JsonReader;
 
 /**
  * Constructs a German [Semantic] Parse tree. Calls KParser to get input sentence's [English] semantic tree.

@@ -1,4 +1,4 @@
-package kparser;
+package translator;
 
 import java.io.*;
 import java.net.URL;

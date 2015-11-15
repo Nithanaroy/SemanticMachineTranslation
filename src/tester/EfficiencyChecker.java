@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
 
-import kparser.GermanTranslator;
+import main.GermanTranslator;
 
 public class EfficiencyChecker {
 	public static boolean DEBUG = true;
