@@ -67,10 +67,40 @@ public class GermanTranslator {
 				word = j.getBaseForm(word, "v");
 			}
 			String german = getGermanWord(word, pos);
+			if (pos != null && pos.charAt(0) == 'V') {
+				german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+			}
 			builder.append(german + " ");
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Calls the German generator which re-arranges the words in the sentence so that it is grammatically correct
+	 * 
+	 * @param sentence sentence to fix
+	 * @param lemmatize indicates whether to lemmatize the verbs or not
+	 * @return Grammatically correct translated sentence in German
+	 * @throws IOException passing the exception up from translate() API
+	 * @throws JSONException passing the exception up from translate() API
+	 * @throws ParseException passing the exception up from translate() API
+	 */
+	public String getGrammaticallyCorrectSentence(String sentence, boolean lemmatize) throws IOException, JSONException, ParseException {
+		// TODO: stub for generator wrapper calling code
+		return getRawGermanSentence(sentence, lemmatize);
+	}
+
+	/**
+	 * Requests for {@literal german} word in a particular tense
+	 * 
+	 * @param german word for which tense translation has to be done
+	 * @param tense tense to which this word has to be transformed
+	 * @return word in requested tense
+	 */
+	private String getWordInRightTense(String german, String tense) {
+		// TODO: Stub for tense translation call code
+		return german;
 	}
 
 	private <T> ArrayList<T> ArrayToList(T[] words) {
