@@ -2,6 +2,7 @@
 Application that converts a sentence from English to German using the semantics of the sentence. This is unlike other statistical translators which blindly perform a word to word replacement with probability statistics models.
 
 # Setting up Dev Env
+- [optional] Copy .classpath_template and rename the copy to .classpath
 - Import this repo as an existing project in eclipse
 - Install Python 2.7 if not already installed
 - Install Jython from [here](http://www.jython.org/downloads.html) using the **installer** and NOT the standalore JAR. Remember the directory where it is installing. We need it later. Pick Standard Installation during the installation process
