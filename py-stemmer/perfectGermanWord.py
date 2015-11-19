@@ -46,5 +46,5 @@ def perfectWord(text):
     group = Counter(all_tenses[tense])
     return group.most_common(1)[0][0]
 
-#Print all the acquired data
-print perfectWord('sein####VBN')
+# Print all the acquired data
+# print perfectWord('sein####VBN')
