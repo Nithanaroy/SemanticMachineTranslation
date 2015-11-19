@@ -53,13 +53,14 @@ public class JsonReader {
 
 	public String translate(String input, String pos) throws IOException,
 			JSONException, ParseException {
+		//System.out.println( input + " " + pos);
 		String main_result = input;
 		String result;
 		json json_sub = new json();
 		
 		pos=json_sub.posTagConvertor(pos);
-		System.out.print(input + " ");
-		System.out.println(pos);
+		//System.out.print(input + " ");
+		//System.out.println(pos);
 		try {
 			JSONObject json_main = readJsonFromUrl("https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20151025T082334Z.d1c51ebb15e03fc9.b9f5b9c541bd619e3a4fe3ffbb2823fd23fa2c81&lang=en-de&text="
 					+ input);
@@ -83,11 +84,19 @@ public class JsonReader {
 				JSONArray arr1 = json_sub.subArray(obj, s);
 				json_main = new JSONObject(
 						json_sub.subStringFromsubArray(arr1));
-				res_pos = (String) json_main.get("pos");
+				
 				String result_1 = (String) json_main.get("text");
+				res_pos = (String) json_main.get("pos");
+				
 				boolean flag=false;
 			    String res_pos_tr=res_pos;
 				
+			    if(pos.equals("non"))
+			    {
+			    	return result_1;
+			    }
+			    
+			    
 				if(res_pos.equals(pos) && !(result_1.isEmpty()))
 				{
 					
@@ -104,7 +113,7 @@ public class JsonReader {
 				String result_2 = (String) json_main.get("text");
 				res_pos = (String) json_main.getString("pos");
 				
-				System.out.println(result_2);
+				//System.out.println(result_2);
 				
 				if(res_pos.equals(pos) && !(result_2.isEmpty()))
 				{
@@ -112,7 +121,7 @@ public class JsonReader {
 				}
 				else if(!(result_2.isEmpty()))
 				{
-					System.out.println("pos tag in syn is " +res_pos_tr);
+					//System.out.println("pos tag in syn is " +res_pos_tr);
 					return result_2;
 				}
 				
