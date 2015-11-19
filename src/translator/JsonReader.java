@@ -79,11 +79,11 @@ public class JsonReader {
 
 				String res_pos = (String) sub.get("pos");
 				result = (String) sub.get("ts");
-				if (res_pos.equals(pos) && res_pos.equals("noun")) {
+				/*if (res_pos.equals(pos) && res_pos.equals("noun")) {
 					if (!result.isEmpty()) {
 						return result;
 					}
-				}
+				}*/
 				s = json_sub.subString_2(sub, "tr");
 				JSONArray arr1 = json_sub.subArray(obj, s);
 
@@ -94,8 +94,11 @@ public class JsonReader {
 
 				boolean flag = false;
 				String res_pos_tr = res_pos;
-
-				if (pos.equals("non")) {
+				
+				if (res_pos.equals(pos) && res_pos.equals("noun")) {
+					if (!result.isEmpty() && result_1.equals(input)) {
+						return result;
+					}
 					return result_1;
 				}
 
