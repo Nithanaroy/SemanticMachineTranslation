@@ -50,6 +50,12 @@ class json{
 		{
 			return "null";
 		}
+		
+		if(str.equals("NNP"))
+		{
+			str="non";
+			return str;
+		}
 		char c= str.charAt(0);
 		try{
 			switch(c)
