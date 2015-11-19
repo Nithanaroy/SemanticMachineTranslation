@@ -32,7 +32,7 @@ public class PythonRunner {
 			interpreter.close();
 			return realResult;
 		} catch (PyException e) {
-			e.printStackTrace();
+			 e.printStackTrace();
 		}
 		return null;
 	}

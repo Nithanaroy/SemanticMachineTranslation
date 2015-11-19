@@ -1,5 +1,5 @@
 package tester;
 
 public enum Settings {
-	maxLines, stem
+	maxLines, stem, writeToFileAppendMode
 }
