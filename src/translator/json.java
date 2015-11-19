@@ -14,42 +14,38 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.*;
+
+import utils.Constants;
 //import java.util.*;
 //import org.json.simple.parser.*;
 
+class json {
 
-class json{
-	
-	public String subString (org.json.JSONObject json_main, String str) throws JSONException 
-	{
+	public String subString(org.json.JSONObject json_main, String str) throws JSONException {
 		return (json_main.get(str)).toString();
 	}
-	
-	public String subString_2 (JSONObject json_main, String str) throws JSONException 
-	{
+
+	public String subString_2(JSONObject json_main, String str) throws JSONException {
 		return (json_main.get(str)).toString();
 	}
- 
-	public JSONArray subArray(Object obj, String str) throws ParseException
-	{
+
+	public JSONArray subArray(Object obj, String str) throws ParseException {
 		JSONParser parser = new JSONParser();
-		 obj = parser.parse(str);
+		obj = parser.parse(str);
 		return (JSONArray) obj;
 	}
-	
-	public String subStringFromsubArray(JSONArray arr)
-	{
-		String s=(arr.get(0)).toString();
+
+	public String subStringFromsubArray(JSONArray arr) {
+		String s = (arr.get(0)).toString();
 		return s;
 	}
-	
-	public String posTagConvertor(String str)
-	{
-		
-		if(str.equals(null))
-		{
+
+	public String posTagConvertor(String str) {
+
+		if (str == null) {
 			return "null";
 		}
+<<<<<<< HEAD
 		
 		if(str.equals("NNP"))
 		{
@@ -112,15 +108,63 @@ class json{
 					break;
 				}
 			
+=======
+		char c = str.charAt(0);
+		try {
+			switch (c) {
+			case 'V': {
+				str = "verb";
+				break;
+>>>>>>> 1922511da4d8db075f71a6daf23be7a4b0c75af8
 			}
-		}
-		catch (Exception e)
-		{
-			System.out.println("pos is null");
+			case 'N': {
+				str = "noun";
+				break;
+			}
+			case 'R': {
+				str = "adverb";
+				break;
+			}
+			case 'J': {
+				str = "adjective";
+				break;
+			}
+			case 'D': {
+				str = "determiner";
+				break;
+			}
+			case 'W':
+			case 'P': {
+				str = "pronoun";
+				break;
+			}
+			case 'I': {
+				str = "preposition";
+				break;
+			}
+			case 'C': {
+				str = "conjunction";
+				break;
+			}
+			case 'U': {
+				str = "interjunction";
+				break;
+			}
+			default: {
+				str = "null";
+				break;
+			}
+
+			}
+		} catch (Exception e) {
+			if (Constants.DEBUG) {
+				System.out.println("pos is null");
+			}
+
 			return null;
 		}
-		
+
 		return str;
 	}
-	
+
 }
