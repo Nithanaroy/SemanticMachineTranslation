@@ -45,7 +45,7 @@ class json {
 		if (str == null) {
 			return "null";
 		}
-<<<<<<< HEAD
+
 		
 		if(str.equals("NNP"))
 		{
@@ -107,56 +107,10 @@ class json {
 					str="null";
 					break;
 				}
-			
-=======
-		char c = str.charAt(0);
-		try {
-			switch (c) {
-			case 'V': {
-				str = "verb";
-				break;
->>>>>>> 1922511da4d8db075f71a6daf23be7a4b0c75af8
 			}
-			case 'N': {
-				str = "noun";
-				break;
-			}
-			case 'R': {
-				str = "adverb";
-				break;
-			}
-			case 'J': {
-				str = "adjective";
-				break;
-			}
-			case 'D': {
-				str = "determiner";
-				break;
-			}
-			case 'W':
-			case 'P': {
-				str = "pronoun";
-				break;
-			}
-			case 'I': {
-				str = "preposition";
-				break;
-			}
-			case 'C': {
-				str = "conjunction";
-				break;
-			}
-			case 'U': {
-				str = "interjunction";
-				break;
-			}
-			default: {
-				str = "null";
-				break;
-			}
+		}
 
-			}
-		} catch (Exception e) {
+		 catch (Exception e) {
 			if (Constants.DEBUG) {
 				System.out.println("pos is null");
 			}
@@ -166,5 +120,6 @@ class json {
 
 		return str;
 	}
-
 }
+
+
