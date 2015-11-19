@@ -95,7 +95,7 @@ public class EfficiencyChecker {
 	 * @param settings user settings
 	 * @return merged settings with default and user given
 	 */
-	private static HashMap<Settings, Object> getMergedSettings(HashMap<Settings, Object> settings) {
+	public static HashMap<Settings, Object> getMergedSettings(HashMap<Settings, Object> settings) {
 		HashMap<Settings, Object> defaultSettings = new HashMap<>();
 		defaultSettings.put(Settings.maxLines, 10);
 		defaultSettings.put(Settings.stem, false);

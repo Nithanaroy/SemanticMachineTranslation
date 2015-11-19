@@ -11,7 +11,12 @@ import module.graph.ParserHelper;
 import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
 import module.graph.resources.InputDependencies;
+import tester.EfficiencyChecker;
+import tester.Settings;
 import translator.JsonReader;
+import utils.Constants;
+import utils.MyFileWriter;
+import utils.PythonRunner;
 
 /**
  * Constructs a German [Semantic] Parse tree. Calls KParser to get input sentence's [English] semantic tree.
@@ -81,15 +86,24 @@ public class GermanTranslator {
 	 * Calls the German generator which re-arranges the words in the sentence so that it is grammatically correct
 	 * 
 	 * @param sentence sentence to fix
-	 * @param lemmatize indicates whether to lemmatize the verbs or not
+	 * @param settings A hash of settings like lemmatize
 	 * @return Grammatically correct translated sentence in German
 	 * @throws IOException passing the exception up from translate() API
 	 * @throws JSONException passing the exception up from translate() API
 	 * @throws ParseException passing the exception up from translate() API
 	 */
-	public String getGrammaticallyCorrectSentence(String sentence, boolean lemmatize) throws IOException, JSONException, ParseException {
-		// TODO: stub for generator wrapper calling code
-		return getRawGermanSentence(sentence, lemmatize);
+	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings)
+			throws IOException, JSONException, ParseException {
+
+		settings = EfficiencyChecker.getMergedSettings(settings);
+		boolean lemmatize = (boolean) settings.get(Settings.stem);
+		boolean append = (boolean) settings.get(Settings.writeToFileAppendMode);
+
+		String rawGerman = getRawGermanSentence(sentence, lemmatize);
+		MyFileWriter.writeLine(Constants.rawSetencesFile, rawGerman, append);
+		String alignedGerman = ""; // TODO: Stub for Sujata's Wrapper class
+
+		return alignedGerman;
 	}
 
 	/**
@@ -100,8 +114,7 @@ public class GermanTranslator {
 	 * @return word in requested tense
 	 */
 	private String getWordInRightTense(String german, String tense) {
-		// TODO: Stub for tense translation call code
-		return german;
+		return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
 	}
 
 	private <T> ArrayList<T> ArrayToList(T[] words) {
