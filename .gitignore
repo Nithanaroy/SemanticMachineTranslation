@@ -5,3 +5,4 @@ vendor/
 data/
 .classpath
 *.py~
+.idea/

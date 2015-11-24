@@ -1,18 +1,13 @@
 package main;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-import module.graph.MakeGraph;
-import module.graph.ParserHelper;
-import module.graph.helper.JAWSutility;
-import module.graph.helper.NodePassedToViewer;
-import module.graph.resources.DependencyParserResource;
-import module.graph.resources.InputDependencies;
+import module.graph.resources.NamedEntityTagger;
 
 public class TestKparser {
 	public static void main(String[] args) {
 		// SentenceToGraph stg = new SentenceToGraph();
-		String sent = "John loves Mia.";
+		// String sent = "John loves Mia.";
 		// GraphPassingNode gpn = stg.extractGraph(sent, false, true, false);
 		// for(String s : gpn.getAspGraph()){
 		// System.out.println(s);
@@ -29,8 +24,13 @@ public class TestKparser {
 		// InputDependencies iDeps= dr.extractDependencies("John loves Mia.", false, 0);
 		// System.out.println();
 
-		JAWSutility j = new JAWSutility();
-		String baseForm = j.getBaseForm("ate", "v");
-		System.out.println("Done");
+		// JAWSutility j = new JAWSutility();
+		// String baseForm = j.getBaseForm("ate", "v");
+		// System.out.println("Done");
+
+		NamedEntityTagger.tagNamedEntities("John loves Mia");
+		String sent = NamedEntityTagger.getModifiedSentence();
+		HashMap<String, String> sMap = NamedEntityTagger.getStringToNamedEntityMap();
+		System.exit(0);
 	}
 }
