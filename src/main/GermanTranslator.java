@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
@@ -11,6 +12,7 @@ import module.graph.ParserHelper;
 import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
 import module.graph.resources.InputDependencies;
+import module.graph.resources.NamedEntityTagger;
 import tester.EfficiencyChecker;
 import tester.Settings;
 import translator.JsonReader;
@@ -59,27 +61,63 @@ public class GermanTranslator {
 	 * @throws ParseException
 	 */
 	public String getRawGermanSentence(String sentence, boolean lemmatize) throws IOException, JSONException, ParseException {
+		// Named Entity Recognition
+		HashSet<String> namedEntities = getNamedEntities(sentence);
+
 		StringBuilder builder = new StringBuilder();
-		InputDependencies iDeps = dr.extractDependencies(sentence, false, 0);
-		HashMap<String, String> posMap = iDeps.getPosMap();
+		HashMap<String, String> posMap = dr.extractDependencies(sentence, false, 0).getPosMap();
 
 		String words[] = sentence.split(" "); // Assumption-1024146
 		JAWSutility j = new JAWSutility(); // For lemmatization
 
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
-			String pos = posMap.get(word + "-" + (i + 1));
-			if (lemmatize && pos != null && pos.charAt(0) == 'V') {
-				word = j.getBaseForm(word, "v");
-			}
-			String german = getGermanWord(word, pos);
-			if (pos != null && pos.charAt(0) == 'V') {
-				german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+			String german = "";
+
+			if (namedEntities.contains(word)) {
+				german = transliterate(word);
+			} else {
+				String pos = posMap.get(word + "-" + (i + 1));
+				if (lemmatize && pos != null && pos.charAt(0) == 'V') {
+					word = j.getBaseForm(word, "v");
+				}
+				german = getGermanWord(word, pos);
+				if (pos != null && pos.charAt(0) == 'V') {
+					german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+				}
 			}
 			builder.append(german + " ");
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Transliteration of named entities
+	 * 
+	 * @param word word to transliterate
+	 * @return transliterated word in german
+	 */
+	private String transliterate(String word) {
+		// TODO: Stub for transliterate function
+		return word;
+	}
+
+	/**
+	 * Gets the named entities from KParser and split entities when separated by _
+	 * 
+	 * @param sentence sentence for which named entities are to be found
+	 * @return set of named entities
+	 */
+	private HashSet<String> getNamedEntities(String sentence) {
+		NamedEntityTagger.tagNamedEntities(sentence);
+		HashMap<String, String> ner = NamedEntityTagger.getStringToNamedEntityMap();
+		HashSet<String> words = new HashSet<>();
+		for (String key : ner.keySet()) {
+			for (String split_key : key.split("_"))
+				words.add(split_key);
+		}
+		return words;
 	}
 
 	/**

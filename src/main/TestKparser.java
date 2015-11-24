@@ -28,8 +28,8 @@ public class TestKparser {
 		// String baseForm = j.getBaseForm("ate", "v");
 		// System.out.println("Done");
 
-		NamedEntityTagger.tagNamedEntities("John loves Mia");
-		String sent = NamedEntityTagger.getModifiedSentence();
+		NamedEntityTagger.tagNamedEntities("Dan Kleaver goes to Arizona State University.");
+		// String sent = NamedEntityTagger.getModifiedSentence();
 		HashMap<String, String> sMap = NamedEntityTagger.getStringToNamedEntityMap();
 		System.exit(0);
 	}
