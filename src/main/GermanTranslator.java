@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
+import org.python.util.PythonInterpreter;
 
 import module.graph.ParserHelper;
 import module.graph.helper.JAWSutility;
@@ -31,8 +32,11 @@ import utils.PythonRunner;
 public class GermanTranslator {
 
 	private static GermanTranslator _germanTree = null;
-	private ParserHelper ph = null;
-	DependencyParserResource dr;
+	// private ParserHelper ph = null;
+	private DependencyParserResource dr;
+	private PythonInterpreter interpreter;
+
+	final private String tenseTranslationFile = "py-stemmer/perfectGermanWord.py";
 
 	/**
 	 * A SingleTon class
@@ -41,7 +45,16 @@ public class GermanTranslator {
 		/* expensive operations */
 		// ph = new ParserHelper();
 		dr = new DependencyParserResource();
+
+		interpreter = new PythonInterpreter();
+		interpreter.execfile(tenseTranslationFile);
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		// Clean up
+		interpreter.close();
+	};
 
 	public static GermanTranslator getInstance() {
 		if (_germanTree == null) {
@@ -152,7 +165,14 @@ public class GermanTranslator {
 	 * @return word in requested tense
 	 */
 	private String getWordInRightTense(String german, String tense) {
-		return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
+		// return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
+		try {
+			return PythonRunner.execute(interpreter, "perfectWord", german + "####" + tense);
+		} catch (Exception e) {
+			if (Constants.DEBUG)
+				e.printStackTrace();
+			return german; // return original word on exception
+		}
 	}
 
 	private <T> ArrayList<T> ArrayToList(T[] words) {
