@@ -12,8 +12,16 @@ import tester.Settings;
 
 public class Runner {
 
-	public static void main(String[] args) throws IOException, JSONException, ParseException {
+	public static void main(String[] args) {
 
+		try {
+			translate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void tester() throws IOException, JSONException, ParseException {
 		// Settings for tester
 		HashMap<Settings, Object> mySettings = new HashMap<>();
 		mySettings.put(Settings.maxLines, 2);
@@ -26,15 +34,23 @@ public class Runner {
 		System.out.println("Done");
 	}
 
-	private static void translate() throws IOException, JSONException, ParseException {
+	private static void translate() throws Exception {
 		GermanTranslator t = GermanTranslator.getInstance();
 
 		// TODO: Doesn't work for due to KParser: System.out.println(t.getRawGermanSetence("i ate an apple today"));
-		System.out.println("With Stemming");
-		System.out.println(t.getRawGermanSentence("John loves Mia", true));
+		// System.out.println("With Stemming");
+		// System.out.println(t.getRawGermanSentence("He killed his wife", true));
 
-		System.out.println("\nWithout Stemming");
-		System.out.println(t.getRawGermanSentence("John loves Mia", false));
+		HashMap<Settings, Object> mySettings = new HashMap<>();
+		mySettings.put(Settings.stem, true);
+		mySettings.put(Settings.writeToFileAppendMode, false);
+
+		t.getGrammaticallyCorrectSentence("John loves Mia ", mySettings);
+
+		// System.out.println("\nWithout Stemming");
+		// System.out.println(t.getRawGermanSentence("John loves Mia", false));
+
+		System.out.println("Done");
 	}
 
 }

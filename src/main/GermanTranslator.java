@@ -9,15 +9,15 @@ import org.json.JSONException;
 import org.json.simple.parser.ParseException;
 import org.python.util.PythonInterpreter;
 
-import module.graph.ParserHelper;
+import generator.GenerateHelper;
 import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
-import module.graph.resources.InputDependencies;
 import module.graph.resources.NamedEntityTagger;
 import tester.EfficiencyChecker;
 import tester.Settings;
 import translator.JsonReader;
 import utils.Constants;
+import utils.MyFileReader;
 import utils.MyFileWriter;
 import utils.PythonRunner;
 
@@ -139,12 +139,10 @@ public class GermanTranslator {
 	 * @param sentence sentence to fix
 	 * @param settings A hash of settings like lemmatize
 	 * @return Grammatically correct translated sentence in German
-	 * @throws IOException passing the exception up from translate() API
-	 * @throws JSONException passing the exception up from translate() API
-	 * @throws ParseException passing the exception up from translate() API
+	 * @throws Exception 
 	 */
 	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings)
-			throws IOException, JSONException, ParseException {
+			throws Exception {
 
 		settings = EfficiencyChecker.getMergedSettings(settings);
 		boolean lemmatize = (boolean) settings.get(Settings.stem);
@@ -152,7 +150,8 @@ public class GermanTranslator {
 
 		String rawGerman = getRawGermanSentence(sentence, lemmatize);
 		MyFileWriter.writeLine(Constants.rawSetencesFile, rawGerman, append);
-		String alignedGerman = ""; // TODO: Stub for Sujata's Wrapper class
+		GenerateHelper.callAlign(Constants.rawSetencesFile, Constants.correctSetencesFile);
+		String alignedGerman = MyFileReader.readFile(Constants.correctSetencesFile);
 
 		return alignedGerman;
 	}
