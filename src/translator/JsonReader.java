@@ -59,9 +59,10 @@ public class JsonReader {
 		String main_result = input;
 		String result = "";
 		json json_sub = new json();
-		String temp_result="";
+		String temp_result = "";
 
 		pos = json_sub.posTagConvertor(pos);
+
 		if (Constants.DEBUG) {
 			System.out.print(input + " ");
 			System.out.println(pos);
@@ -75,37 +76,44 @@ public class JsonReader {
 			String s = json_sub.subString(json_main, "def");
 			Object obj = null;
 			JSONArray arr = json_sub.subArray(obj, s);
+			String res_pos = "";
+			//System.out.println(arr);
 
-			for (int j = 0; j < arr.size(); j++) {
-				org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr
-						.get(j);
-				String res_pos = (String) sub.get("pos");
-				result = (String) sub.get("text");
-				temp_result=(String)sub.get("tr");
-				
+			org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr
+					.get(0);
+			/*if((boolean) sub.get("pos"))
+			{
+			 res_pos = (String) sub.get("pos");
+			}
+			if((boolean) sub.get("text"))
+			{
+			 result = (String) sub.get("text");
+			}
+			if((boolean) sub.get("ts"))
+			{
+			 temp_result=(String)sub.get("tr");
+			}*/
 
-				s = json_sub.subString_2(sub, "tr");
-				JSONArray arr1 = json_sub.subArray(obj, s);
+			s = json_sub.subString_2(sub, "tr");
+			JSONArray arr1 = json_sub.subArray(obj, s);
+			for (int i = 0; i < arr1.size(); i++)
 
-				for (int i = 0; i < arr1.size(); i++)
+			{
+				org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr
+						.get(i);
+				s = json_sub.subString_2(sub2, "tr");
+				JSONArray arr2 = json_sub.subArray(obj, s);
+				json_main = new JSONObject(json_sub.subStringFromsubArray(arr2));
+				String result_1 = (String) json_main.get("text");
+				//System.out.println(result_1);
+				res_pos = (String) json_main.get("pos");
 
-				{
-					org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr
-							.get(i);
-					s = json_sub.subString_2(sub, "tr");
-					JSONArray arr2 = json_sub.subArray(obj, s);
-					json_main = new JSONObject(
-							json_sub.subStringFromsubArray(arr2));
-					String result_1 = (String) json_main.get("text");
-					res_pos = (String) json_main.get("pos");
-
-					if (res_pos.equals(pos))
-						return result_1;
-
-				}
+				if (res_pos.compareTo(pos) == 0)
+					return result_1;
 
 			}
-			if(!result.equals(input))
+
+			if (!result.equals(input) && !(temp_result.equals("")))
 				return temp_result;
 			else
 				return result;
@@ -117,5 +125,11 @@ public class JsonReader {
 		return main_result;
 	}
 
-	
+	/*public static void main(String[] args) throws IOException, JSONException,
+			ParseException {
+		JsonReader obj = new JsonReader();
+		String result = obj.translate("jump", "N");
+		System.out.println(result);
+	}*/
+
 }
