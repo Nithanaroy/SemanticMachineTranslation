@@ -2,8 +2,6 @@ package stemmer;
 
 import java.util.ArrayList;
 
-import org.jruby.ir.interpreter.Interpreter;
-
 import utils.PythonRunner;
 
 public class Lancaster extends Stemmer {
