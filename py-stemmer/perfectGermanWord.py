@@ -35,7 +35,7 @@ def perfectWord(text):
 
     #Extracting data from URL
     url = "http://www.verbix.com/webverbix/German/"+base_word+".html"
-    print url
+    # print url
     htmlfile = urllib.urlopen(url)
     htmltext = htmlfile.read()
     htmltext=htmltext.replace('&ouml;','ö')
