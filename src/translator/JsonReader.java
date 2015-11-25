@@ -57,8 +57,9 @@ public class JsonReader {
 	public String translate(String input, String pos) throws IOException,
 			JSONException, ParseException {
 		String main_result = input;
-		String result;
+		String result = "";
 		json json_sub = new json();
+		String temp_result="";
 
 		pos = json_sub.posTagConvertor(pos);
 		if (Constants.DEBUG) {
@@ -67,81 +68,54 @@ public class JsonReader {
 		}
 
 		try {
-			JSONObject json_main = readJsonFromUrl("https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20151025T082334Z.d1c51ebb15e03fc9.b9f5b9c541bd619e3a4fe3ffbb2823fd23fa2c81&lang=en-de&text="
+			JSONObject json_main = readJsonFromUrl(""
+					+ "https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20151025T082334Z.d1c51ebb15e03fc9.b9f5b9c541bd619e3a4fe3ffbb2823fd23fa2c81&lang=en-de&text="
 					+ input);
 
 			String s = json_sub.subString(json_main, "def");
 			Object obj = null;
 			JSONArray arr = json_sub.subArray(obj, s);
-			for (int i = 0; i < arr.size(); i++) {
-				org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr
-						.get(i);
 
+			for (int j = 0; j < arr.size(); j++) {
+				org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr
+						.get(j);
 				String res_pos = (String) sub.get("pos");
-				result = (String) sub.get("ts");
-				/*if (res_pos.equals(pos) && res_pos.equals("noun")) {
-					if (!result.isEmpty()) {
-						return result;
-					}
-				}*/
+				result = (String) sub.get("text");
+				temp_result=(String)sub.get("tr");
+				
+
 				s = json_sub.subString_2(sub, "tr");
 				JSONArray arr1 = json_sub.subArray(obj, s);
 
-				json_main = new JSONObject(json_sub.subStringFromsubArray(arr1));
+				for (int i = 0; i < arr1.size(); i++)
 
-				String result_1 = (String) json_main.get("text");
-				res_pos = (String) json_main.get("pos");
-
-				boolean flag = false;
-				String res_pos_tr = res_pos;
-				
-				if (res_pos.equals(pos) && res_pos.equals("noun")) {
-					if (!result.isEmpty() && result_1.equals(input)) {
-						return result;
-					}
-					return result_1;
-				}
-
-				if (res_pos.equals(pos) && !(result_1.isEmpty())) {
-
-					return result_1;
-				} else if (!(result_1.isEmpty())) {
-					flag = true;
-
-					s = json_sub.subString(json_main, "syn");
-					arr1 = json_sub.subArray(obj, s);
+				{
+					org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr
+							.get(i);
+					s = json_sub.subString_2(sub, "tr");
+					JSONArray arr2 = json_sub.subArray(obj, s);
 					json_main = new JSONObject(
-							json_sub.subStringFromsubArray(arr1));
-					String result_2 = (String) json_main.get("text");
-					res_pos = (String) json_main.getString("pos");
+							json_sub.subStringFromsubArray(arr2));
+					String result_1 = (String) json_main.get("text");
+					res_pos = (String) json_main.get("pos");
 
-					// System.out.println(result_2);
-
-					if (res_pos.equals(pos) && !(result_2.isEmpty())) {
-						return result_2;
-					} else if (!(result_2.isEmpty())) {
-
-						if (Constants.DEBUG) {
-							System.out.println(result_2);
-						}
-						return result_2;
-					}
-
-					if (flag) {
-						if (Constants.DEBUG) {
-							System.out.println("pos tag in tr " + res_pos);
-						}
-
+					if (res_pos.equals(pos))
 						return result_1;
-					} else {
-						return input;
-					}
+
 				}
+
 			}
+			if(!result.equals(input))
+				return temp_result;
+			else
+				return result;
+
 		} /* end of try catch buffer */
 
 		catch (Exception e) {
 		}
 		return main_result;
 	}
+
+	
 }
