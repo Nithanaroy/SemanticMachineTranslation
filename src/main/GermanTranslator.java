@@ -3,18 +3,23 @@ package main;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
+import org.python.util.PythonInterpreter;
 
-import module.graph.ParserHelper;
+import generator.GenerateHelper;
 import module.graph.helper.JAWSutility;
 import module.graph.resources.DependencyParserResource;
-import module.graph.resources.InputDependencies;
+import module.graph.resources.NamedEntityTagger;
 import tester.EfficiencyChecker;
 import tester.Settings;
 import translator.JsonReader;
+import translator.Transliteration;
 import utils.Constants;
+import utils.MyFileReader;
 import utils.MyFileWriter;
 import utils.PythonRunner;
 
@@ -29,8 +34,11 @@ import utils.PythonRunner;
 public class GermanTranslator {
 
 	private static GermanTranslator _germanTree = null;
-	private ParserHelper ph = null;
-	DependencyParserResource dr;
+	// private ParserHelper ph = null;
+	private DependencyParserResource dr;
+	private PythonInterpreter interpreter;
+
+	final private String tenseTranslationFile = "py-stemmer/perfectGermanWord.py";
 
 	/**
 	 * A SingleTon class
@@ -39,7 +47,16 @@ public class GermanTranslator {
 		/* expensive operations */
 		// ph = new ParserHelper();
 		dr = new DependencyParserResource();
+
+		interpreter = new PythonInterpreter();
+		interpreter.execfile(tenseTranslationFile);
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		// Clean up
+		interpreter.close();
+	};
 
 	public static GermanTranslator getInstance() {
 		if (_germanTree == null) {
@@ -59,22 +76,30 @@ public class GermanTranslator {
 	 * @throws ParseException
 	 */
 	public String getRawGermanSentence(String sentence, boolean lemmatize) throws IOException, JSONException, ParseException {
+		// Named Entity Recognition
+		HashSet<String> namedEntities = getNamedEntities(sentence);
+
 		StringBuilder builder = new StringBuilder();
-		InputDependencies iDeps = dr.extractDependencies(sentence, false, 0);
-		HashMap<String, String> posMap = iDeps.getPosMap();
+		HashMap<String, String> posMap = dr.extractDependencies(sentence, false, 0).getPosMap();
 
 		String words[] = sentence.split(" "); // Assumption-1024146
 		JAWSutility j = new JAWSutility(); // For lemmatization
 
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
-			String pos = posMap.get(word + "-" + (i + 1));
-			if (lemmatize && pos != null && pos.charAt(0) == 'V') {
-				word = j.getBaseForm(word, "v");
-			}
-			String german = getGermanWord(word, pos);
-			if (pos != null && pos.charAt(0) == 'V') {
-				german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+			String german = "";
+
+			if (namedEntities.contains(word)) {
+				german = transliterate(word);
+			} else {
+				String pos = posMap.get(word + "-" + (i + 1));
+				if (lemmatize && pos != null && pos.charAt(0) == 'V') {
+					word = j.getBaseForm(word, "v");
+				}
+				german = getGermanWord(word, pos);
+				if (pos != null && pos.charAt(0) == 'V') {
+					german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+				}
 			}
 			builder.append(german + " ");
 		}
@@ -83,17 +108,43 @@ public class GermanTranslator {
 	}
 
 	/**
+	 * Transliteration of named entities
+	 * 
+	 * @param word word to transliterate
+	 * @return transliterated word in german
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 */
+	private String transliterate(String word) throws ClientProtocolException, IOException {
+		return Transliteration.transliterate(word);
+	}
+
+	/**
+	 * Gets the named entities from KParser and split entities when separated by _
+	 * 
+	 * @param sentence sentence for which named entities are to be found
+	 * @return set of named entities
+	 */
+	private HashSet<String> getNamedEntities(String sentence) {
+		NamedEntityTagger.tagNamedEntities(sentence);
+		HashMap<String, String> ner = NamedEntityTagger.getStringToNamedEntityMap();
+		HashSet<String> words = new HashSet<>();
+		for (String key : ner.keySet()) {
+			for (String split_key : key.split("_"))
+				words.add(split_key);
+		}
+		return words;
+	}
+
+	/**
 	 * Calls the German generator which re-arranges the words in the sentence so that it is grammatically correct
 	 * 
 	 * @param sentence sentence to fix
 	 * @param settings A hash of settings like lemmatize
 	 * @return Grammatically correct translated sentence in German
-	 * @throws IOException passing the exception up from translate() API
-	 * @throws JSONException passing the exception up from translate() API
-	 * @throws ParseException passing the exception up from translate() API
+	 * @throws Exception
 	 */
-	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings)
-			throws IOException, JSONException, ParseException {
+	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings) throws Exception {
 
 		settings = EfficiencyChecker.getMergedSettings(settings);
 		boolean lemmatize = (boolean) settings.get(Settings.stem);
@@ -101,7 +152,8 @@ public class GermanTranslator {
 
 		String rawGerman = getRawGermanSentence(sentence, lemmatize);
 		MyFileWriter.writeLine(Constants.rawSetencesFile, rawGerman, append);
-		String alignedGerman = ""; // TODO: Stub for Sujata's Wrapper class
+		GenerateHelper.callAlign(Constants.rawSetencesFile, Constants.correctSetencesFile);
+		String alignedGerman = MyFileReader.readFile(Constants.correctSetencesFile);
 
 		return alignedGerman;
 	}
@@ -114,7 +166,14 @@ public class GermanTranslator {
 	 * @return word in requested tense
 	 */
 	private String getWordInRightTense(String german, String tense) {
-		return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
+		// return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
+		try {
+			return PythonRunner.execute(interpreter, "perfectWord", german + "####" + tense);
+		} catch (Exception e) {
+			if (Constants.DEBUG)
+				e.printStackTrace();
+			return german; // return original word on exception
+		}
 	}
 
 	private <T> ArrayList<T> ArrayToList(T[] words) {

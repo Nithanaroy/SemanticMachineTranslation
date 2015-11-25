@@ -32,24 +32,19 @@ public class PythonRunner {
 			interpreter.close();
 			return realResult;
 		} catch (PyException e) {
-			 e.printStackTrace();
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	public static String execute(PythonInterpreter interpreter, String functionName, String arg) {
-		try {
-			PyObject buildingClass = interpreter.get(functionName);
-			PyObject result;
-			if (arg == null)
-				result = buildingClass.__call__();
-			else
-				result = buildingClass.__call__(new PyString(arg));
-			String realResult = (String) result.__tojava__(String.class);
-			return realResult;
-		} catch (PyException e) {
-			e.printStackTrace();
-		}
-		return null;
+		PyObject buildingClass = interpreter.get(functionName);
+		PyObject result;
+		if (arg == null)
+			result = buildingClass.__call__();
+		else
+			result = buildingClass.__call__(new PyString(arg));
+		String realResult = (String) result.__tojava__(String.class);
+		return realResult;
 	}
 }

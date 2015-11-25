@@ -5,3 +5,5 @@ vendor/
 data/
 .classpath
 *.py~
+.idea/
+py-aligner/alignedtext.txt
