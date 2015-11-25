@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
 import org.python.util.PythonInterpreter;
@@ -16,6 +17,7 @@ import module.graph.resources.NamedEntityTagger;
 import tester.EfficiencyChecker;
 import tester.Settings;
 import translator.JsonReader;
+import translator.Transliteration;
 import utils.Constants;
 import utils.MyFileReader;
 import utils.MyFileWriter;
@@ -110,10 +112,11 @@ public class GermanTranslator {
 	 * 
 	 * @param word word to transliterate
 	 * @return transliterated word in german
+	 * @throws IOException
+	 * @throws ClientProtocolException
 	 */
-	private String transliterate(String word) {
-		// TODO: Stub for transliterate function
-		return word;
+	private String transliterate(String word) throws ClientProtocolException, IOException {
+		return Transliteration.transliterate(word);
 	}
 
 	/**
@@ -139,10 +142,9 @@ public class GermanTranslator {
 	 * @param sentence sentence to fix
 	 * @param settings A hash of settings like lemmatize
 	 * @return Grammatically correct translated sentence in German
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings)
-			throws Exception {
+	public String getGrammaticallyCorrectSentence(String sentence, HashMap<Settings, Object> settings) throws Exception {
 
 		settings = EfficiencyChecker.getMergedSettings(settings);
 		boolean lemmatize = (boolean) settings.get(Settings.stem);
