@@ -6,7 +6,7 @@ public class GenerateHelper {
 
 	public static String callAlign(String inputPath, String outputPath) {
 		String oneFile = inputPath + "(" + outputPath;
-		String filePath = PythonRunner.execute("py-aligner/align.py", "decode", oneFile);
+		String filePath = PythonRunner.execute("py-aligner/align.py", "align", oneFile);
 		return filePath;
 	}
 }
