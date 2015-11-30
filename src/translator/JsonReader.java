@@ -32,16 +32,14 @@ public class JsonReader {
 		return sb.toString();
 	}
 
-	public static JSONObject readJsonFromUrl(String url) throws IOException,
-			JSONException {
+	public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
 		InputStream is = new URL(url).openStream(); /*
 													 * takes the input from the
 													 * url and stores them in
 													 * string format
 													 */
 		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is,
-					Charset.forName("UTF-8")));
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = readAll(rd); /*
 											 * the string buffer is given as
 											 * input to the JSON object
@@ -54,8 +52,7 @@ public class JsonReader {
 
 	}
 
-	public String translate(String input, String pos) throws IOException,
-			JSONException, ParseException {
+	public String translate(String input, String pos) throws IOException, JSONException, ParseException {
 		String main_result = input;
 		String result = "";
 		json json_sub = new json();
@@ -63,30 +60,29 @@ public class JsonReader {
 
 		pos = json_sub.posTagConvertor(pos);
 
-	
-		  if (Constants.DEBUG) { System.out.print(input + " ");
-		  System.out.println(pos); }
-		 
+		if (Constants.DEBUG) {
+			System.out.print(input + " ");
+			System.out.println(pos);
+		}
+
 		try {
-			JSONObject json_main = readJsonFromUrl(""
-					+ "https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20151025T082334Z.d1c51ebb15e03fc9.b9f5b9c541bd619e3a4fe3ffbb2823fd23fa2c81&lang=en-de&text="
-					+ input);
+			JSONObject json_main = readJsonFromUrl(
+					"" + "https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20151025T082334Z.d1c51ebb15e03fc9.b9f5b9c541bd619e3a4fe3ffbb2823fd23fa2c81&lang=en-de&text="
+							+ input);
 
 			String s = json_sub.subString(json_main, "def");
 			Object obj = null;
 			JSONArray arr = json_sub.subArray(obj, s);
 			String res_pos = "";
 
-			org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr
-					.get(0);
+			org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr.get(0);
 
 			s = json_sub.subString_2(sub, "tr");
 			JSONArray arr1 = json_sub.subArray(obj, s);
 			for (int i = 0; i < arr1.size(); i++)
 
 			{
-				org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr1
-						.get(i);
+				org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr1.get(i);
 
 				String result_1 = (String) sub2.get("text");
 
@@ -117,5 +113,20 @@ public class JsonReader {
 		catch (Exception e) {
 		}
 		return main_result;
+	}
+
+	public static void main(String[] args) {
+		JsonReader j = new JsonReader();
+		try {
+			String translated = j.translate("studies", "VBZ");
+			System.out.println(translated);
+			System.out.println("Done");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 }
