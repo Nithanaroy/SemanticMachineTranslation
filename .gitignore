@@ -7,3 +7,4 @@ data/
 *.py~
 .idea/
 py-aligner/alignedtext.txt
+/bin/
