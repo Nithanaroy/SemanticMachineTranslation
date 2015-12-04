@@ -2,12 +2,9 @@ package tester;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.simple.parser.ParseException;
+import java.util.Map;
 
 import main.GermanTranslator;
 
@@ -45,12 +42,10 @@ public class EfficiencyChecker {
 	 * @param germanFilePath Complete path to corresponding German translations, one per line
 	 * @param settings 1) maxlines(int): Maximum number of lines to translate and compare (2) stem(bool): decides whether stemming should be done or not while translation
 	 * @return
-	 * @throws IOException
-	 * @throws JSONException
-	 * @throws ParseException
+	 * @throws Exception
 	 */
-	public static HashMap<String, ArrayList<Integer>> test(String engFilePath, String germanFilePath, HashMap<Settings, Object> settings)
-			throws IOException, JSONException, ParseException {
+	public static HashMap<String, ArrayList<Float>> test(String engFilePath, String germanFilePath, HashMap<Settings, Object> settings)
+			throws Exception {
 
 		BufferedReader en = new BufferedReader(new FileReader(engFilePath));
 		BufferedReader de = new BufferedReader(new FileReader(germanFilePath));
@@ -60,24 +55,28 @@ public class EfficiencyChecker {
 		int maxLines = (int) settings.get(Settings.maxLines);
 		boolean stem = (boolean) settings.get(Settings.stem);
 
-		HashMap<String, ArrayList<Integer>> diffs = new HashMap<>();
-		diffs.put("TotalExpectedWords", new ArrayList<Integer>(maxLines));
-		diffs.put("TotalActualWords", new ArrayList<Integer>(maxLines));
-		diffs.put("OneToOne", new ArrayList<Integer>(maxLines));
-		diffs.put("BagCompare", new ArrayList<Integer>(maxLines));
-		diffs.put("MinEditDistance", new ArrayList<Integer>(maxLines));
+		HashMap<String, ArrayList<Float>> diffs = new HashMap<>();
+		diffs.put("TotalExpectedWords", new ArrayList<Float>(maxLines));
+		diffs.put("TotalActualWords", new ArrayList<Float>(maxLines));
+		diffs.put("OneToOne", new ArrayList<Float>(maxLines));
+		diffs.put("BagCompare", new ArrayList<Float>(maxLines));
+		diffs.put("MinEditDistance", new ArrayList<Float>(maxLines));
+		diffs.put("BLUE", new ArrayList<Float>(maxLines));
 
 		String eng, gerExpected, gerActual;
 		for (int i = 0; i < maxLines; i++) {
 			eng = en.readLine();
 			gerExpected = de.readLine();
-			gerActual = t.getRawGermanSentence(eng, stem);
 
-			diffs.get("TotalExpectedWords").add(gerExpected.split(" ").length);
-			diffs.get("TotalActualWords").add(gerActual.split(" ").length);
-			diffs.get("OneToOne").add(oneToOneCompare(gerActual, gerExpected));
-			diffs.get("BagCompare").add(bagOfWordsComparison(gerActual, gerExpected));
-			diffs.get("MinEditDistance").add(minEditDistance(gerActual, gerExpected));
+			gerActual = t.getRawGermanSentence(eng, stem);
+			// gerActual = t.getGrammaticallyCorrectSentence(eng, settings);
+
+			diffs.get("TotalExpectedWords").add((float) gerExpected.split(" ").length);
+			diffs.get("TotalActualWords").add((float) gerActual.split(" ").length);
+			diffs.get("OneToOne").add((float) oneToOneCompare(gerActual, gerExpected));
+			diffs.get("BagCompare").add((float) bagOfWordsComparison(gerActual, gerExpected));
+			diffs.get("MinEditDistance").add((float) minEditDistance(gerActual, gerExpected));
+			diffs.get("BLUE").add(unigramBlue(gerActual, gerExpected));
 
 			if (DEBUG) {
 				System.out.format("Eng: %s\n\tActualGerman: %s\n\tExpectGerman: %s\n\n", eng, gerActual, gerExpected);
@@ -196,6 +195,29 @@ public class EfficiencyChecker {
 			diff += Math.abs(r);
 		}
 		return diff;
+	}
+
+	/**
+	 * Counts the number of words in s1 which were found in s2 of total words in s1
+	 * 
+	 * @return Percent match considering only unigram BLUE
+	 */
+	public static float unigramBlue(String s1, String s2) {
+		String words1[] = s1.split(" ");
+		String words2[] = s2.split(" ");
+		HashMap<String, Integer> wordCount = new HashMap<>();
+		for (String w : words1) {
+			upsert(wordCount, w.toLowerCase(), 1);
+		}
+		for (String w : words2) {
+			upsert(wordCount, w.toLowerCase(), -1);
+		}
+		int match = 0;
+		for (String word : wordCount.keySet()) {
+			if (wordCount.get(word) == 0)
+				match++;
+		}
+		return match / (float) words1.length;
 	}
 
 	private static void upsert(HashMap<String, Integer> wordCount, String w, int inc) {

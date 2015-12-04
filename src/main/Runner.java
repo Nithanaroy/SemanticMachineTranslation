@@ -15,19 +15,27 @@ public class Runner {
 	public static void main(String[] args) {
 
 		try {
-			translate();
+			// translate();
+			tester();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void tester() throws IOException, JSONException, ParseException {
+	private static void tester() {
 		// Settings for tester
 		HashMap<Settings, Object> mySettings = new HashMap<>();
-		mySettings.put(Settings.maxLines, 29);
+		mySettings.put(Settings.maxLines, 5);
 		mySettings.put(Settings.stem, true);
+		mySettings.put(Settings.writeToFileAppendMode, false);
+		HashMap<String, ArrayList<Float>> diffLines = null;
 
-		HashMap<String, ArrayList<Integer>> diffLines = EfficiencyChecker.test("/home/alekhya/en", "/home/alekhya/dee", mySettings);
+		try {
+			// diffLines = EfficiencyChecker.test("data/corpus.en", "data/corpus.de", mySettings);
+			diffLines = EfficiencyChecker.test("data/test-en-clean", "data/test-de-clean", mySettings);
+		} catch (Exception e) {
+
+		}
 		System.out.println(diffLines);
 		System.out.println("Done");
 	}

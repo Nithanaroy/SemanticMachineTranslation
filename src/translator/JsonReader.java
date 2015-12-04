@@ -1,3 +1,5 @@
+package translator;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +33,10 @@ public class JsonReader {
 	}
 
 	public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-		InputStream is = new URL(url)
-				.openStream(); /*
-								 * takes the input from the url and stores them
-								 * in string format
-								 */
+		InputStream is = new URL(url).openStream(); /*
+													 * takes the input from the url and stores them
+													 * in string format
+													 */
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = readAll(rd); /*
@@ -58,10 +59,11 @@ public class JsonReader {
 
 		pos = json_sub.posTagConvertor(pos);
 
-		 if (Constants.DEBUG) {
-		 System.out.print(input + " ");
-		 System.out.println(pos);
-		 }
+		if (Constants.DEBUG) {
+			if (pos == null) {
+				System.out.println("JSONReader Line 64: " + input + " " + pos);
+			}
+		}
 
 		try {
 			JSONObject json_main = readJsonFromUrl(
@@ -90,19 +92,21 @@ public class JsonReader {
 					if (res_pos.compareTo(pos) == 0)
 						return result_1;
 					else
-						result=result_1;
+						result = result_1;
 
 				}
 
-				/*if (sub.get("pos") != null) {
-					res_pos = (String) sub.get("pos");
-				}
-				if (sub.get("text") != null) {
-					result = (String) sub.get("text");
-				}
-				if (sub.get("ts") != null) {
-					temp_result = (String) sub.get("tr");
-				}*/
+				/*
+				 * if (sub.get("pos") != null) {
+				 * res_pos = (String) sub.get("pos");
+				 * }
+				 * if (sub.get("text") != null) {
+				 * result = (String) sub.get("text");
+				 * }
+				 * if (sub.get("ts") != null) {
+				 * temp_result = (String) sub.get("tr");
+				 * }
+				 */
 			}
 			if (!result.equals(input) && !(temp_result.equals("")))
 				return temp_result;

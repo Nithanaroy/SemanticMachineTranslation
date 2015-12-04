@@ -5,4 +5,5 @@ public class Constants {
 	public static final String correctSetencesFile = "data/correct.txt";
 
 	public static final boolean DEBUG = true;
+	public static final boolean ERROR = false;
 }

@@ -36,9 +36,11 @@ public class GermanTranslator {
 	private static GermanTranslator _germanTree = null;
 	// private ParserHelper ph = null;
 	private DependencyParserResource dr;
-	private PythonInterpreter interpreter;
+	private PythonInterpreter forGermanTenseInterpreter;
+	private PythonInterpreter forAlignmentInterpreter;
 
 	final private String tenseTranslationFile = "py-stemmer/perfectGermanWord.py";
+	final private String wordAlignerFile = "py-aligner/align.py";
 
 	/**
 	 * A SingleTon class
@@ -48,14 +50,18 @@ public class GermanTranslator {
 		// ph = new ParserHelper();
 		dr = new DependencyParserResource();
 
-		interpreter = new PythonInterpreter();
-		interpreter.execfile(tenseTranslationFile);
+		forGermanTenseInterpreter = new PythonInterpreter();
+		forGermanTenseInterpreter.execfile(tenseTranslationFile);
+
+		forAlignmentInterpreter = new PythonInterpreter();
+		forAlignmentInterpreter.execfile(wordAlignerFile);
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
 		// Clean up
-		interpreter.close();
+		forGermanTenseInterpreter.close();
+		forAlignmentInterpreter.close();
 	};
 
 	public static GermanTranslator getInstance() {
@@ -152,7 +158,7 @@ public class GermanTranslator {
 
 		String rawGerman = getRawGermanSentence(sentence, lemmatize);
 		MyFileWriter.writeLine(Constants.rawSetencesFile, rawGerman, append);
-		GenerateHelper.callAlign(Constants.rawSetencesFile, Constants.correctSetencesFile);
+		GenerateHelper.callAlign(forAlignmentInterpreter, Constants.rawSetencesFile, Constants.correctSetencesFile);
 		String alignedGerman = MyFileReader.readFile(Constants.correctSetencesFile);
 
 		return alignedGerman;
@@ -168,10 +174,12 @@ public class GermanTranslator {
 	private String getWordInRightTense(String german, String tense) {
 		// return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
 		try {
-			return PythonRunner.execute(interpreter, "perfectWord", german + "####" + tense);
+			return PythonRunner.execute(forGermanTenseInterpreter, "perfectWord", german + "####" + tense);
 		} catch (Exception e) {
-			if (Constants.DEBUG)
+			if (Constants.ERROR)
 				e.printStackTrace();
+			if (Constants.DEBUG)
+				System.out.format("GermanTranslator Line 181: Could not find %s tense for %s\n", tense, german);
 			return german; // return original word on exception
 		}
 	}

@@ -12,13 +12,13 @@ def align(filename):
 	files = filename.split('(')
 	ripe_file = os.path.abspath(files[1])
 	raw_file = os.path.abspath(files[0])
-	raw_for_nltk = os.path.abspath('../newcorpus/source.txt')
+	raw_for_nltk = os.path.abspath('data/newcorpus/source.txt')
 	with open(files[0]) as f:
 		with open(raw_for_nltk,"w") as f1:
 			for line in f:
 				f1.write(line)
 
-	corpusdir = '../newcorpus/'
+	corpusdir = 'data/newcorpus/'
 	newcorpus = PlaintextCorpusReader(corpusdir, '.*',sent_tokenizer=nltk.data.LazyLoader('tokenizers/punkt/german.pickle'))
 	out = open(ripe_file, "w")
 	i = 0
