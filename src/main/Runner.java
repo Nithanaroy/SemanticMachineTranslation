@@ -1,11 +1,7 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.simple.parser.ParseException;
 
 import tester.EfficiencyChecker;
 import tester.Settings;

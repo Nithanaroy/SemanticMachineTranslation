@@ -68,8 +68,8 @@ public class EfficiencyChecker {
 			eng = en.readLine();
 			gerExpected = de.readLine();
 
-			gerActual = t.getRawGermanSentence(eng, stem);
-			// gerActual = t.getGrammaticallyCorrectSentence(eng, settings);
+			// gerActual = t.getRawGermanSentence(eng, stem);
+			gerActual = t.getGrammaticallyCorrectSentence(eng, settings);
 
 			diffs.get("TotalExpectedWords").add((float) gerExpected.split(" ").length);
 			diffs.get("TotalActualWords").add((float) gerActual.split(" ").length);

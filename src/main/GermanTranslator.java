@@ -37,8 +37,10 @@ public class GermanTranslator {
 	// private ParserHelper ph = null;
 	private DependencyParserResource dr;
 	private PythonInterpreter forGermanTenseInterpreter;
+	private PythonInterpreter forGermanTenseOfflineInterpreter;
 	private PythonInterpreter forAlignmentInterpreter;
 
+	final private String tenseTranslationOfflineFile = "py-stemmer/wordForTense.py";
 	final private String tenseTranslationFile = "py-stemmer/perfectGermanWord.py";
 	final private String wordAlignerFile = "py-aligner/align.py";
 
@@ -52,6 +54,9 @@ public class GermanTranslator {
 
 		forGermanTenseInterpreter = new PythonInterpreter();
 		forGermanTenseInterpreter.execfile(tenseTranslationFile);
+
+		forGermanTenseOfflineInterpreter = new PythonInterpreter();
+		forGermanTenseOfflineInterpreter.execfile(tenseTranslationOfflineFile);
 
 		forAlignmentInterpreter = new PythonInterpreter();
 		forAlignmentInterpreter.execfile(wordAlignerFile);
@@ -104,7 +109,7 @@ public class GermanTranslator {
 				}
 				german = getGermanWord(word, pos);
 				if (pos != null && pos.charAt(0) == 'V') {
-					german = getWordInRightTense(german, pos); // UPEN pos also has tense information
+					german = getWordInRightTense(german, pos, true); // UPEN pos also has tense information
 				}
 			}
 			builder.append(german + " ");
@@ -169,11 +174,14 @@ public class GermanTranslator {
 	 * 
 	 * @param german word for which tense translation has to be done
 	 * @param tense tense to which this word has to be transformed
+	 * @param useDb if false, makes a REST call, else local saved DB will be used
 	 * @return word in requested tense
 	 */
-	private String getWordInRightTense(String german, String tense) {
+	private String getWordInRightTense(String german, String tense, boolean useDB) {
 		// return PythonRunner.execute("py-stemmer/perfectGermanWord.py", "perfectWord", german + "####" + tense);
 		try {
+			if (useDB)
+				return PythonRunner.execute(forGermanTenseOfflineInterpreter, "wordInTense", german + "####" + tense);
 			return PythonRunner.execute(forGermanTenseInterpreter, "perfectWord", german + "####" + tense);
 		} catch (Exception e) {
 			if (Constants.ERROR)
