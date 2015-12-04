@@ -1,5 +1,3 @@
-package translator;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,11 +31,11 @@ public class JsonReader {
 	}
 
 	public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-		InputStream is = new URL(url).openStream(); /*
-													 * takes the input from the
-													 * url and stores them in
-													 * string format
-													 */
+		InputStream is = new URL(url)
+				.openStream(); /*
+								 * takes the input from the url and stores them
+								 * in string format
+								 */
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = readAll(rd); /*
@@ -60,10 +58,10 @@ public class JsonReader {
 
 		pos = json_sub.posTagConvertor(pos);
 
-		if (Constants.DEBUG) {
-			System.out.print(input + " ");
-			System.out.println(pos);
-		}
+		 if (Constants.DEBUG) {
+		 System.out.print(input + " ");
+		 System.out.println(pos);
+		 }
 
 		try {
 			JSONObject json_main = readJsonFromUrl(
@@ -75,39 +73,41 @@ public class JsonReader {
 			JSONArray arr = json_sub.subArray(obj, s);
 			String res_pos = "";
 
-			org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr.get(0);
+			for (int j = 0; j < arr.size(); j++) {
+				org.json.simple.JSONObject sub = (org.json.simple.JSONObject) arr.get(j);
 
-			s = json_sub.subString_2(sub, "tr");
-			JSONArray arr1 = json_sub.subArray(obj, s);
-			for (int i = 0; i < arr1.size(); i++)
+				s = json_sub.subString_2(sub, "tr");
+				JSONArray arr1 = json_sub.subArray(obj, s);
+				for (int i = 0; i < arr1.size(); i++)
 
-			{
-				org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr1.get(i);
+				{
+					org.json.simple.JSONObject sub2 = (org.json.simple.JSONObject) arr1.get(i);
 
-				String result_1 = (String) sub2.get("text");
+					String result_1 = (String) sub2.get("text");
 
-				res_pos = (String) sub2.get("pos");
+					res_pos = (String) sub2.get("pos");
 
-				if (res_pos.compareTo(pos) == 0)
-					return result_1;
+					if (res_pos.compareTo(pos) == 0)
+						return result_1;
+					else
+						result=result_1;
 
+				}
+
+				/*if (sub.get("pos") != null) {
+					res_pos = (String) sub.get("pos");
+				}
+				if (sub.get("text") != null) {
+					result = (String) sub.get("text");
+				}
+				if (sub.get("ts") != null) {
+					temp_result = (String) sub.get("tr");
+				}*/
 			}
-
-			if (sub.get("pos") != null) {
-				res_pos = (String) sub.get("pos");
-			}
-			if (sub.get("text") != null) {
-				result = (String) sub.get("text");
-			}
-			if (sub.get("ts") != null) {
-				temp_result = (String) sub.get("tr");
-			}
-
 			if (!result.equals(input) && !(temp_result.equals("")))
 				return temp_result;
 			else
 				return result;
-
 		} /* end of try catch buffer */
 
 		catch (Exception e) {
