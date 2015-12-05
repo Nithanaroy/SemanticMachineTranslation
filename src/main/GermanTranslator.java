@@ -109,7 +109,7 @@ public class GermanTranslator {
 				}
 				german = getGermanWord(word, pos);
 				if (pos != null && pos.charAt(0) == 'V') {
-					german = getWordInRightTense(german, pos, true); // UPEN pos also has tense information
+					german = getWordInRightTense(german, pos, false); // UPEN pos also has tense information
 				}
 			}
 			builder.append(german + " ");

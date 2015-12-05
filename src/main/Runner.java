@@ -11,8 +11,8 @@ public class Runner {
 	public static void main(String[] args) {
 
 		try {
-			// translate();
-			tester();
+			 translate();
+//			tester();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -41,7 +41,7 @@ public class Runner {
 
 		// TODO: Doesn't work for due to KParser: System.out.println(t.getRawGermanSetence("i ate an apple today"));
 		System.out.println("With Stemming");
-		System.out.println(t.getRawGermanSentence("John killed his wife who studies as Arizona State University", true));
+		System.out.println(t.getRawGermanSentence("John killed his wife who studies at Arizona State University", true));
 
 		// HashMap<Settings, Object> mySettings = new HashMap<>();
 		// mySettings.put(Settings.stem, true);
