@@ -1,6 +1,9 @@
 # Semantic Machine Translation
 Application that converts a sentence from English to German using the semantics of the sentence. This is unlike other statistical translators which blindly perform a word to word replacement with probability statistics models.
 
+This approach is different from existing syntactic translators which use probability to guess the translations and ordering of words. We translate using the meaning of the sentence to German. Check this Vauquois triangle for levels of translation
+![screen shot 2015-12-11 at 1 10 47 pm](https://cloud.githubusercontent.com/assets/670556/11754442/b02ffb9e-a008-11e5-8335-c0c47e3923b7.png)
+
 # Setting up Dev Env
 - [optional] Copy .classpath_template and rename the copy to .classpath
 - Import this repo as an existing project in eclipse
